@@ -5,7 +5,7 @@
   "type": "module",
   "homepage": "https://gloomy-penguin-kim.github.io/coursera-ibm-developing-with-react--plantShopping/",
   "scripts": {
-    "predeploy": "npm run build'",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "dev": "vite",
     "build": "vite build",

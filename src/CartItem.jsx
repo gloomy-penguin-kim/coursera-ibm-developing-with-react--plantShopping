@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { removeCartSliceItem, incrementQuantity, decrementQuantity } from './CartSlice';
 import './CartItem.css';
 
-const CartItem = ({ onContinueShopping }) => {
+const CartItem = ({ onContinueShopping, onCheckout }) => {
   const cartItems = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
@@ -58,7 +58,7 @@ const CartItem = ({ onContinueShopping }) => {
       <div className="continue_shopping_btn">
         <button className="get-started-button" onClick={(e) => onContinueShopping(e)}>Continue Shopping</button>
         <br />
-        <button className="get-started-button1">Checkout</button>
+        <button className="get-started-button1" onClick={(e) => onCheckout(e)}>Checkout</button>
       </div>
     </div>
   );
