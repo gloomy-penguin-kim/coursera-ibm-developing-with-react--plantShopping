@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeItem, incrementQuantity, decrementQuantity } from './CartSlice';
+import { updateCartSliceItem, incrementQuantity, decrementQuantity } from './CartSlice';
 
 import './ProductList.css'
 import CartItem from './CartItem';
@@ -215,9 +215,11 @@ function ProductList() {
         }
     ]); 
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page 
-    const cartItems = useSelector(state => state.cart.items); 
+    const cartItems = useSelector(state => state.cart.items);  
     const dispatch = useDispatch();
  
+    // preparing the data because I dont want to do it manually
+    // assuming the customer just handles the data in this format 
     useEffect(() => {  
         let totalPlants = [...plantsArray] 
         totalPlants.forEach(category => {
@@ -227,8 +229,7 @@ function ProductList() {
                     plant.cost = parseInt(plant.cost.replace("$",""))
                 }
             })
-        }) 
-        console.log(totalPlants)
+        })  
         setPlantsArray(totalPlants)  
     }, [])
 
@@ -256,35 +257,61 @@ const handleCartClick = (e) => {
     e.preventDefault();
     setShowCart(true); // Set showCart to true when cart icon is clicked
 };  
-const handleDecrementPlantQuantity = (item) => { 
-    dispatch(decrementQuantity(item));  
+const handleDecrementPlantQuantity = (item, category) => {   
+    let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
+    newPlantArray.forEach(categoryInner => {
+        if (categoryInner.name == category.name) { 
+            categoryInner.plants.forEach(plant => {
+                if (plant.name == item.name && plant.quantity > 0) {
+                    plant.quantity--; 
+                }
+            })
+        }
+    }) 
+    setPlantsArray(newPlantArray)   
+    dispatch(decrementQuantity(item)); 
 };
-const handleIncrementPlantQuantity = (item) => {
-    dispatch(incrementQuantity(item));
+const handleIncrementPlantQuantity = (item, category) => {   
+    let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
+    newPlantArray.forEach(categoryInner => {
+        if (categoryInner.name == category.name) { 
+            categoryInner.plants.forEach(plant => {
+                if (plant.name == item.name) {
+                    plant.quantity++;
+                }
+            })
+        }
+    }) 
+    setPlantsArray(newPlantArray)    
+    dispatch(incrementQuantity(item)); 
 }; 
-
+ 
 const handlePlantsClick = (e) => {
     e.preventDefault();
-    setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
-    setShowCart(false); // Hide the cart when navigating to About Us
-};
-
-const plantOnClick = (plantName) => {  
-}
-
-const getCartIndex= (plant) => {
-    return cartItems.forEach((item, index) => {
-        if (item.name === plant.name) {
-            return index; 
-        }
-    }); 
-}
+    setShowPlants(true);  
+    setShowCart(false);  
+};  
  
-   const handleContinueShopping = (e) => {
-    e.preventDefault();
-    setShowPlants(true); // Set showAboutUs to true when "About Us" link is clicked
-    setShowCart(false); // Hide the cart when navigating to About Us
-  };
+const handleContinueShopping = (e) => {
+    e.preventDefault(); 
+    let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
+    newPlantArray.forEach(categoryInner => { 
+        categoryInner.plants.forEach(plant => {  
+            let index = null 
+            cartItems.forEach( (i, ii) => {
+                if (i.name === plant.name) index = ii 
+            })
+            
+            if (index != null) { 
+                plant.quantity = cartItems[index].quantity 
+            }
+            else plant.quantity = 0 
+        }) 
+    }) 
+    setPlantsArray(newPlantArray)     
+    setShowPlants(true);  
+    setShowCart(false);  
+};
     return (
         <div>
              <div className="navbar" style={styleObj}>
@@ -314,7 +341,7 @@ const getCartIndex= (plant) => {
     <div> 
     {plantsArray.map((category, index) => ( 
         <div className="product-grid" key={index}>
-            <div><h3>{category.category} {category.plants.length}</h3></div>
+            <div><br/><h2>{category.category}</h2></div>
             <div className="product-list">
  
                 {category.plants.map((item, iindex) => (
@@ -322,13 +349,15 @@ const getCartIndex= (plant) => {
                     <div className="product-image">
                         <img src={item.image} alt={item.name} />
                     </div>
+                    <br/>
                     <div className="product-title"> {item.name} </div>
                     <div className="product-description"> {item.description} </div>
                     <div className="product-cost"> ${item.cost} </div>
+                    <br/>
                     <div className="addons_btn">
-                        <button className="btn-warning" onClick={() => handleDecrementPlantQuantity(index)}> &ndash; </button>
+                        <button className="btn-warning" onClick={() => handleDecrementPlantQuantity(item,category)}> &ndash; </button>
                         <span className="quantity-value">{item.quantity}</span>
-                        <button className=" btn-success" onClick={() => handleIncrementPlantQuantity(index)}> &#43; </button>
+                        <button className=" btn-success" onClick={() => handleIncrementPlantQuantity(item,category)}> &#43; </button>
                     </div>
                 </div>
                 ))}   

@@ -1,50 +1,75 @@
 import { createSlice } from '@reduxjs/toolkit';
+ 
 
 export const CartSlice = createSlice({
   name: 'cart',
-  initialState: {
-    items: {}, // Initialize items as an empty array
+  initialState: { 
+    items: [] 
   },
-  reducers: {
-    addItem: (state, action) => {  
-      const { payload: index } = action;
-      console.log("addItem", state)
-      console.log("addItem", action)
-    },
-    removeItem: (state, action) => { 
-      const { payload: index } = action;
-      if (items[index].quantity > 0) {
-        //dispatch(decrementQuantity(index)); 
-        console.log("removeItem", state[index])
-        array.splice(index, 1);
-        console.log("removeItem", state)
-      }
-    },
-    incrementQuantity: (state, action) => { 
-      const { payload: item } = action;
+  reducers: { 
+    removeCartSliceItem: (state, action) => { 
+      const { payload: item } = action;     
 
-      if (!state[item.name]) { 
-        console.log("item not found") 
-        state[item.name] = item
-        state[item.name].quantity = 1 
-      }
-      else {
-        console.log("item found", state[item.name].quantity) 
-        state[item.name].quantity = state[item.name].quantity  + 1; 
-      } 
+      let index = null 
+      state.items.forEach( (i, ii) => {
+        if (i.name === item.name) index = ii 
+      })
 
-      console.log("incrementQuantity", state[item.name].quantity ) 
+      state.items.splice(index, 1);   
     },
-    decrementQuantity: (state, action) => { 
-      const { payload: index } = action;
-      if (state[index] && state[index].quantity > 0) {
-        state[index].quantity--;
-        console.log("decrementQuantity", state[index])
-      }  
-    }
+    addCartSliceItem(state, action) { 
+      const { payload: item } = action;     
+
+      state.items.push(item) 
+    },
+    incrementQuantity: (state, action) => {  
+      const { payload: item } = action;   
+
+      let index = null 
+      state.items.forEach( (i, ii) => {
+        if (i.name === item.name) index = ii 
+      })
+
+      if (index != null) {
+        state.items[index].quantity++ 
+      }
+      else { 
+        let newIndex = state.items.push(item) - 1 
+        state.items[newIndex].quantity = 1 
+      }   
+   },
+    updateCartSliceItem: (state, action) => { 
+      const { payload: item } = action;   
+
+      let index = null 
+      state.items.forEach( (i, ii) => {
+        if (i.name === item.name) index = ii 
+      })
+
+      if (index !== null) 
+        state.items[index] = item
+      else
+        state.items.push(item)  
+    },
+    decrementQuantity: (state, action) => {
+      const { payload: item } = action;   
+          
+      let index = null 
+      state.items.forEach( (i, ii) => {
+        if (i.name === item.name) index = ii 
+      }) 
+
+      if (index != null) { 
+        if (state.items[index].quantity > 0) 
+          state.items[index].quantity--
+        else
+          state.items.splice(index, 1)  
+      }
+
   },
-});
+}});
 
-export const { addItem, removeItem, incrementQuantity, decrementQuantity } = CartSlice.actions;
+export const { addCartSliceItem, removeCartSliceItem, 
+  updateCartSliceItem, incrementQuantity, decrementQuantity } = CartSlice.actions;
 
 export default CartSlice.reducer;
