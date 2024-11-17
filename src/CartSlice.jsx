@@ -25,14 +25,17 @@ export const CartSlice = createSlice({
     incrementQuantity: (state, action) => {  
       const { payload: item } = action;   
 
-      const existingItem = state.items.find(iitem => iitem.name === item.name);
+      let index = null 
+      state.items.forEach( (i, ii) => {
+        if (i.name === item.name) index = ii 
+      })
 
-      if (existingItem) {
-        existingItem.quantity++ 
+      if (index != null) {
+        state.items[index].quantity++ 
       }
       else { 
-        item.quantity = 1 
-        state.items.push(item) - 1  
+        let newIndex = state.items.push(item) - 1 
+        state.items[newIndex].quantity = 1 
       }   
    },
     updateCartSliceItem: (state, action) => { 
@@ -42,10 +45,9 @@ export const CartSlice = createSlice({
       state.items.forEach( (i, ii) => {
         if (i.name === item.name) index = ii 
       })
-      const existingItem = state.items.find(iitem => iitem.name === item.name);
 
-      if (existingItem) 
-        existingItem = item
+      if (index !== null) 
+        state.items[index] = item
       else
         state.items.push(item)  
     },
