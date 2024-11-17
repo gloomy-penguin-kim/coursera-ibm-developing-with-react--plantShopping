@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://gloomy-penguin-kim.github.io/coursera-ibm-developing-with-react--plantShopping",
+  "homepage": "https://gloomy-penguin-kim.github.io/coursera-ibm-developing-with-react--plantShopping/",
   "scripts": {
     "predeploy": "npm run build'",
     "deploy": "gh-pages -d dist",
