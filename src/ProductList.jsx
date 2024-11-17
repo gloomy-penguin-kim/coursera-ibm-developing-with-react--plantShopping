@@ -263,7 +263,7 @@ function ProductList() {
     textDecoration: 'none',
    }
    const styleCartTotal={
-    'font-size': '20px',
+    fontSize: '20px',
     position: 'relative', 
     top: '44px',
     left: '25px'
@@ -274,28 +274,24 @@ const handleCartClick = (e) => {
 };  
 const handleDecrementPlantQuantity = (item, category) => {   
     let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
-    newPlantArray.forEach(categoryInner => {
-        if (categoryInner.name == category.name) { 
-            categoryInner.plants.forEach(plant => {
-                if (plant.name == item.name && plant.quantity > 0) {
-                    plant.quantity--; 
-                }
-            })
-        }
+    newPlantArray.forEach(categoryInner => { 
+        categoryInner.plants.forEach(plant => {
+            if (plant.name == item.name && plant.quantity > 0) {
+                plant.quantity--; 
+            }
+        }) 
     }) 
     setPlantsArray(newPlantArray)   
     dispatch(decrementQuantity(item)); 
 };
 const handleIncrementPlantQuantity = (item, category) => {   
     let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
-    newPlantArray.forEach(categoryInner => {
-        if (categoryInner.name == category.name) { 
-            categoryInner.plants.forEach(plant => {
-                if (plant.name == item.name) {
-                    plant.quantity++;
-                }
-            })
-        }
+    newPlantArray.forEach(categoryInner => {  
+        categoryInner.plants.forEach(plant => {
+            if (plant.name == item.name) {
+                plant.quantity++;
+            }
+        }) 
     }) 
     setPlantsArray(newPlantArray)    
     dispatch(incrementQuantity(item)); 
