@@ -229,6 +229,7 @@ function ProductList() {
                 if (typeof plant.cost === "string") {
                     plant.cost = parseInt(plant.cost.replace("$",""))
                 }
+                plant.buttonActive = true 
             })
         })  
         setPlantsArray(totalPlants)  
@@ -240,7 +241,8 @@ function ProductList() {
             total += item.quantity
         })
         setCartTotalItems(total) 
-    }, [cartItems]) 
+    }, [cartItems])  
+
 
    const styleObj={
     backgroundColor: '#4CAF50',
@@ -265,14 +267,14 @@ function ProductList() {
    const styleCartTotal={
     fontSize: '20px',
     position: 'relative', 
-    top: '44px',
-    left: '25px'
+    top: '20px',
+    left: '42px'
    }
 const handleCartClick = (e) => {
     e.preventDefault();
     setShowCart(true); // Set showCart to true when cart icon is clicked
 };  
-const handleDecrementPlantQuantity = (item, category) => {   
+const handleDecrementPlantQuantity = (item) => {   
     let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
     newPlantArray.forEach(categoryInner => { 
         categoryInner.plants.forEach(plant => {
@@ -284,10 +286,10 @@ const handleDecrementPlantQuantity = (item, category) => {
     setPlantsArray(newPlantArray)   
     dispatch(decrementQuantity(item)); 
 };
-const handleIncrementPlantQuantity = (item, category) => {   
+const handleIncrementPlantQuantity = (item) => {   
     let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
-    newPlantArray.forEach(categoryInner => {  
-        categoryInner.plants.forEach(plant => {
+    newPlantArray.forEach(category => {  
+        category.plants.forEach(plant => {
             if (plant.name == item.name) {
                 plant.quantity++;
             }
@@ -296,6 +298,23 @@ const handleIncrementPlantQuantity = (item, category) => {
     setPlantsArray(newPlantArray)    
     dispatch(incrementQuantity(item)); 
 }; 
+
+const handleIncrementPlantQuantityToOne = (item) => {   
+    const itemQuantity = item.quantity 
+    const itemName = item.name 
+    let newPlantArray = JSON.parse(JSON.stringify(plantsArray)) 
+    newPlantArray.forEach(category => {  
+        category.plants.forEach(plant => {
+            if (plant.name == item.name) {
+                plant.buttonActive = false
+                plant.quantity++ 
+            }
+        }) 
+    }) 
+    item.quantity++
+    setPlantsArray(newPlantArray)    
+    dispatch(updateCartSliceItem(item)); 
+}
  
 const handlePlantsClick = (e) => {
     e.preventDefault();
@@ -323,7 +342,10 @@ const handleContinueShopping = (e) => {
             if (index != null) { 
                 plant.quantity = cartItems[index].quantity 
             }
-            else plant.quantity = 0 
+            else {
+                plant.quantity = 0 
+                plant.buttonActive = true 
+            }
         }) 
     }) 
     setPlantsArray(newPlantArray)     
@@ -348,8 +370,9 @@ const handleContinueShopping = (e) => {
             <div style={styleObjUl}>
                 <div> <a href="#" onClick={(e)=>handlePlantsClick(e)} style={styleA}>Plants</a></div>
                 <div>
-                    <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}><div style={styleCartTotal}>{cartTotalItems}</div>
-                        <h1 className='cart'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68">
+                    <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
+                        
+                        <h1 className='cart'><span style={styleCartTotal}>{cartTotalItems}</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68">
                         <rect width="156" height="156" fill="none"></rect><circle cx="80" cy="216" r="12"></circle><circle cx="184" cy="216" r="12"></circle>
                         <path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" id="mainIconPathAttribute"></path></svg></h1></a></div>
             </div>
@@ -358,12 +381,11 @@ const handleContinueShopping = (e) => {
         <div className="product-grid">
 
 
-<div id="addons" className="container_main">  
-
+<div id="addons" style={{paddingTop: '20px'}} className="container_main">   
     <div> 
     {plantsArray.map((category, index) => ( 
         <div className="product-grid" key={index}>
-            <div><br/><h2>{category.category}</h2></div>
+            <div style={{borderTop: '1px solid black', borderBottom: '1px solid black'}}><h2>{category.category}</h2></div>
             <div className="product-list">
  
                 {category.plants.map((item, iindex) => (
@@ -377,9 +399,11 @@ const handleContinueShopping = (e) => {
                     <div className="product-cost"> ${item.cost} </div>
                     <br/>
                     <div className="addons_btn">
-                        <button className="btn-warning" onClick={() => handleDecrementPlantQuantity(item,category)}> &ndash; </button>
+                        {/* <button className="btn-warning" onClick={() => handleDecrementPlantQuantity(item)}> &ndash; </button>
                         <span className="quantity-value">{item.quantity}</span>
-                        <button className=" btn-success" onClick={() => handleIncrementPlantQuantity(item,category)}> &#43; </button>
+                        <button className=" btn-success" onClick={() => handleIncrementPlantQuantity(item)}> &#43; </button> */} 
+ 
+                        <button key={"AddOneToCart"+iindex.toString()} disabled={item.buttonActive ? false : true} onClick={() => handleIncrementPlantQuantityToOne(item)}>{item.buttonActive ? "Add to Cart" : "In the Cart"}</button>
                     </div>
                 </div>
                 ))}   
